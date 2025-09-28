@@ -1,3 +1,1 @@
-import { Gateway } from './gateway/index.js';
-
-export { Gateway };
+export { Gateway } from './gateway/index.js'

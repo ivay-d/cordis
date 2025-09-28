@@ -9,6 +9,7 @@ import type {
   Identify,
   IdentifyConnectionProperties,
   GatewayEvent,
+  GatewayResume,
   Heartbeat,
   PresenceUpdate,
 } from './gateway';
@@ -24,6 +25,7 @@ export type {
   Identify,
   IdentifyConnectionProperties,
   GatewayEvent,
+  GatewayResume,
   Heartbeat,
   PresenceUpdate,
 };

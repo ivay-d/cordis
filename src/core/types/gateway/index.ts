@@ -9,6 +9,7 @@ import type {
 } from './activity';
 import type { Identify, IdentifyConnectionProperties } from './identify';
 import type { GatewayEvent } from './gateway_event';
+import type { GatewayResume } from './gateway_resume';
 import type { Heartbeat } from './heartbeat';
 import type { PresenceUpdate } from './presence_update';
 
@@ -23,6 +24,7 @@ export type {
   Identify,
   IdentifyConnectionProperties,
   GatewayEvent,
+  GatewayResume,
   Heartbeat,
   PresenceUpdate,
 };

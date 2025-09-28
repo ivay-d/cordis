@@ -1,3 +1,3 @@
-import type { Activity, ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons, Identify, IdentifyConnectionProperties, GatewayEvent, Heartbeat, PresenceUpdate } from './gateway';
-export type { Activity, ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons, Identify, IdentifyConnectionProperties, GatewayEvent, Heartbeat, PresenceUpdate, };
+import type { Activity, ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons, Identify, IdentifyConnectionProperties, GatewayEvent, GatewayResume, Heartbeat, PresenceUpdate } from './gateway';
+export type { Activity, ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons, Identify, IdentifyConnectionProperties, GatewayEvent, GatewayResume, Heartbeat, PresenceUpdate, };
 //# sourceMappingURL=index.d.ts.map

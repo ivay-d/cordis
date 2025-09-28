@@ -1,0 +1,45 @@
+{
+  "name": "cordis",
+  "version": "1.0.0",
+  "description": "The best library to interact with Discord API.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "buld:del":  "rm -rf dist",
+    "build:ts": "tsc",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minto/cordis.git"
+  },
+  "keywords": [
+    "discord",
+    "discordjs",
+    "dapi",
+    "api",
+    "discordapp",
+    "wrapper"
+  ],
+  "author": "Ivaylo D. Y. <randomacc.for1randomthings@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/minto/cordis/issues"
+  },
+  "homepage": "https://github.com/minto/cordis#readme",
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.9"
+  }
+}

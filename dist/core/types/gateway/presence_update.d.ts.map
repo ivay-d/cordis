@@ -1,0 +1,1 @@
+{"version":3,"file":"presence_update.d.ts","sourceRoot":"","sources":["../../../../src/core/types/gateway/presence_update.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,QAAQ,CAAC;AAEvC,MAAM,WAAW,cAAc;IAC7B,KAAK,EAAE,MAAM,CAAC;IACd,UAAU,EAAE,QAAQ,EAAE,CAAC;IACvB,MAAM,EAAE,QAAQ,GAAG,KAAK,GAAG,MAAM,GAAG,WAAW,GAAG,SAAS,CAAC;IAC5D,GAAG,EAAE,OAAO,CAAC;CACd"}

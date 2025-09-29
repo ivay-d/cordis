@@ -1,9 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "@types": ["core/types/index.ts"]
-    },
     "rootDir": "./src",
     "outDir": "./dist",
     "module": "esnext",

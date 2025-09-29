@@ -5,7 +5,7 @@ import type {
   ActivityAssets,
   ActivitySecrets,
   ActivityButtons,
-} from '@types';
+} from '../index.js';
 
 export interface Activity {
   name: string;

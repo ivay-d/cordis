@@ -1,0 +1,1 @@
+export type { GatewayUrl } from './gateway_url.js'

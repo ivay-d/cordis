@@ -1,11 +1,11 @@
 /** Requests */
 import Websocket from 'ws';
 /** Utils */
+import { Endpoints } from '../types/index.js';
 import { Logger } from '../../utils/index.js';
 import { platform } from 'os';
 /** Event */
 import EventEmitter from 'events';
-import { log } from 'console';
 /**
  * Internal
  * Does the heavy lifting for gateway
@@ -16,10 +16,13 @@ export class Gateway extends EventEmitter {
     ws;
     /** The clients token */
     token;
+    /** The intents the client is going to have */
+    intents;
     /** Should we send the identify payload? */
     send_id;
     /** Have we sent the first heartbeat? */
     sent_heartbeat;
+    /** The heartbeat interval id */
     interval_id;
     /** The d field we must send on the heartbeat */
     d_field;
@@ -30,10 +33,11 @@ export class Gateway extends EventEmitter {
     /** Logger for debugging */
     logger;
     /** Sets the variables value */
-    constructor(ws, token) {
+    constructor(config) {
         super();
-        this.ws = ws;
-        this.token = token;
+        this.ws = new Websocket('wss://gateway.discord.gg/?v=10&encoding=json');
+        this.token = config.token;
+        this.intents = config.intents ?? 0;
         this.send_id = false;
         this.sent_heartbeat = false;
         this.interval_id = null;
@@ -65,16 +69,20 @@ export class Gateway extends EventEmitter {
                     }
                     ;
                     break;
+                /**
+                 * Heartbeat was succesful, ignore
+                 */
                 case 11:
                     this.logger.info("Heartbeat succesful");
-                    /**
-                     * Heartbeat was succesful, ignore
-                     */
                     break;
+                /** Reconnecting */
                 case 7:
                     this.logger.info(`Attemping to reconnect op: 7`);
                     this.reconnect();
                     break;
+                /**
+                 * Reconnect or exit the process
+                 */
                 case 9:
                     if (data.d) {
                         this.logger.info('Attempting to reconnect. op: 9, d: true');
@@ -93,13 +101,16 @@ export class Gateway extends EventEmitter {
                         case 1:
                             /** For reconnecting */
                             this.resume_gateway_url = data.d.resume_gateway_url + '/?v=10&encoding=json';
-                            console.log(this.resume_gateway_url);
                             this.session_id = data.d.session_id;
                             /** For heartbeats */
                             this.d_field = data.s;
                             /** Emit the ready event */
                             this.emit('ready', data.d);
-                            this.reconnect();
+                            break;
+                        default:
+                            /** Unimplemented events */
+                            console.log(JSON.stringify(data));
+                            this.d_field = data.s;
                             break;
                     }
                     break;
@@ -188,7 +199,7 @@ export class Gateway extends EventEmitter {
                     device: "cordis",
                     browser: "cordis"
                 },
-                intents: 0,
+                intents: this.intents,
             },
             s: null,
             t: null,
@@ -197,10 +208,17 @@ export class Gateway extends EventEmitter {
         this.ws.send(Buffer.from(JSON.stringify(data)));
         this.logger.info('Sent identify');
     }
+    /** Reconnect to the Discord API gateway */
     reconnect() {
+        /**
+         * Close the current connection
+         * TODO: Fix this giving error (I really don't know how)
+         */
         this.ws.close();
+        /** Make a new connection */
         this.ws = new Websocket(this.resume_gateway_url);
         this.sent_heartbeat = false;
+        /** We sent an "identify" here */
         const json = {
             op: 6,
             d: {
@@ -211,6 +229,10 @@ export class Gateway extends EventEmitter {
             s: null,
             t: null,
         };
+        /**
+         * Send "identify"
+         * Start handling events
+         */
         this.ws.on('open', () => {
             this.ws.send(JSON.stringify(json));
             this.logger.info('Reconnected!');

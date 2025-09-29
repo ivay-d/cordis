@@ -1,4 +1,4 @@
-import type { IdentifyConnectionProperties, PresenceUpdate } from '@types';
+import type { IdentifyConnectionProperties, PresenceUpdate } from '../index.js';
 
 export interface Identify {
   token: string;

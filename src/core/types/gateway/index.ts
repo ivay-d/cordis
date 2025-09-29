@@ -7,11 +7,14 @@ import type {
   ActivitySecrets,
   ActivityButtons,
 } from './activity';
-import type { Identify, IdentifyConnectionProperties } from './identify';
-import type { GatewayEvent } from './gateway_event';
-import type { GatewayResume } from './gateway_resume';
-import type { Heartbeat } from './heartbeat';
-import type { PresenceUpdate } from './presence_update';
+import type {
+  Identify, 
+  IdentifyConnectionProperties
+} from './identify';
+import type { GatewayEvent } from './gateway_event.js';
+import type { GatewayResume } from './gateway_resume.js';
+import type { Heartbeat } from './heartbeat.js';
+import type { PresenceUpdate } from './presence_update.js';
 
 export type {
   Activity,
@@ -28,3 +31,5 @@ export type {
   Heartbeat,
   PresenceUpdate,
 };
+
+export { GatewayIntents } from './intents.js';

@@ -1,4 +1,4 @@
-import type { Activity } from '@types';
+import type { Activity } from './index.js';
 
 export interface PresenceUpdate {
   since: number;

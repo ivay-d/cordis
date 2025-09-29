@@ -1,4 +1,4 @@
-import type { ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons } from '@types';
+import type { ActivityTimestamps, ActivityEmoji, ActivityParty, ActivityAssets, ActivitySecrets, ActivityButtons } from '../index.js';
 export interface Activity {
     name: string;
     type: 0 | 1;

@@ -1,7 +1,7 @@
 <div align="center">
-**Cordis**
----
-The best replacement for Discord.js
+**Cordis**<br>
+---<br>
+The best replacement for Discord.js<br>
 </div>
 
 # About

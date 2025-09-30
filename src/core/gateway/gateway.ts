@@ -133,6 +133,11 @@ export class Gateway extends EventEmitter {
               this.d_field = data.s;
               /** Emit the ready event */
               this.emit('ready', data.d);
+              this.reconnect();
+              break;
+
+            case 2:
+              this.logger.info('Reconnected!');
               break;
 
             default:
@@ -252,39 +257,33 @@ export class Gateway extends EventEmitter {
 
   /** Reconnect to the Discord API gateway */
   reconnect() {
-    /**
-     * Close the current connection
-     * TODO: Fix this giving error (I really don't know how)
-     */
-    this.ws.close();
-    /** Make a new connection */
-    this.ws = new Websocket(this.resume_gateway_url as string);
+    this.ws.onclose = () => {
+      /** Make a new connection */
+      this.ws = new Websocket(this.resume_gateway_url as string);
 
-    this.sent_heartbeat = false;
-    /** We sent an "identify" here */
-    const json: GatewayEvent = {
-      op: 6,
-      d: {
-        token: this.token,
-        session_id: this.session_id as string,
-        seq: this.d_field as number,
-      },
-      s: null,
-      t: null,
+      this.sent_heartbeat = false;
+      /** We sent an "identify" here */
+      const json: GatewayEvent = {
+        op: 6,
+        d: {
+          token: this.token,
+          session_id: this.session_id as string,
+          seq: this.d_field as number,
+        },
+        s: null,
+        t: null,
+      }
+
+      /**
+       * Send "identify"
+       * Start handling events
+       */
+      this.ws.on('open', () => {
+        this.ws.send(JSON.stringify(json));
+        this.event_handler();
+      });
     }
 
-    /**
-     * Send "identify"
-     * Start handling events
-     */
-    this.ws.on('open', () => {
-      this.ws.send(JSON.stringify(json));
-      this.logger.info('Reconnected!')
-      this.event_handler();
-    });
-
-    this.ws.on('error', (e) => {
-      console.log(e);
-    })
+    this.ws.close();
   }
 }

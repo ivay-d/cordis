@@ -1,8 +1,7 @@
 import { Gateway, GatewayIntents } from './core/index.js';
 
 let g = new Gateway({
-    token: 'token',
-    intents: GatewayIntents.Guilds,
+    token: '',
 });
 g.event_handler();
 

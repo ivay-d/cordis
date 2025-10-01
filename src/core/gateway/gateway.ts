@@ -2,10 +2,9 @@
 import Websocket from 'ws';
 
 /** Types */
-import type { GatewayEvent, Heartbeat, ClientConfig, GatewayIntents, GatewayUrl } from '../types/index.js';
+import type { GatewayEvent, Heartbeat, ClientConfig, PresenceUpdate, RequestGuildMembers } from '../types/index.js';
 
 /** Utils */
-import { Endpoints } from '../types/index.js';
 import { Logger } from '../../utils/index.js';
 import { platform } from 'os';
 
@@ -26,6 +25,8 @@ export class Gateway extends EventEmitter {
   token: string;
   /** The intents the client is going to have */
   intents: number
+  large_threshold: number;
+  presence: PresenceUpdate | null;
 
 
   /** Should we send the identify payload? */
@@ -57,6 +58,9 @@ export class Gateway extends EventEmitter {
 
     this.token = config.token;
     this.intents = config.intents as number ?? 0;
+    this.large_threshold = config.large_threshold as number ?? 50;
+    this.presence = config.presence ?? null;
+    this.presence!.afk = this.presence?.afk ?? false;
 
     this.send_id = false;
     this.sent_heartbeat = false;
@@ -69,6 +73,8 @@ export class Gateway extends EventEmitter {
     this.session_id = null;
 
     this.logger = new Logger();
+
+    this.event_handler();
   }
 
   /**
@@ -133,13 +139,17 @@ export class Gateway extends EventEmitter {
               this.d_field = data.s;
               /** Emit the ready event */
               this.emit('ready', data.d);
-              this.reconnect();
               break;
 
+            /** We succesfully reconnected */
             case 2:
               this.logger.info('Reconnected!');
               break;
 
+            /** Ignore */
+            case 10:
+              break;
+            
             default:
               /** Unimplemented events */
               console.log(JSON.stringify(data));
@@ -162,6 +172,7 @@ export class Gateway extends EventEmitter {
      */
     this.ws.on('close', (code: number, reason: Buffer) => {
       switch (code) {
+        /** Try to reconnect */
         case 4000:
         case 4001:
         case 4002:
@@ -174,6 +185,7 @@ export class Gateway extends EventEmitter {
           this.reconnect();
           break;
         
+        /** Can't reconnect */
         case 4004:
         case 4010:
         case 4011:
@@ -184,6 +196,7 @@ export class Gateway extends EventEmitter {
           process.exit();
           break;
 
+        /** Try to reconnect */
         default:
           this.logger.info(`Attempting to reconnect. Code: ${code}, ${reason}`);
           this.reconnect();
@@ -245,6 +258,9 @@ export class Gateway extends EventEmitter {
           browser: "cordis"
         },
         intents: this.intents,
+        large_threshold: this.large_threshold,
+        presence: this.presence,
+        shard: [0, 2]
       },
       s: null,
       t: null,
@@ -285,5 +301,47 @@ export class Gateway extends EventEmitter {
     }
 
     this.ws.close();
+  }
+
+  request_guild_member(config: RequestGuildMembers) {
+    const json: GatewayEvent = {
+      op: 8,
+      d: {
+        guild_id: config.guild_id ?? null,
+        query: config.query ?? null,
+        limit: config.limit ?? null,
+        presences: config.presences ?? null,
+        user_ids: config.user_ids ?? null,
+        nonce: config.nonce ?? null,
+      },
+      s: null,
+      t: null,
+    }
+
+    this.ws.send(JSON.stringify(json));
+
+    this.ws.on('message', (data: GatewayEvent) => {
+      if (data.op === 0) {
+        if (data.s === 10) {
+          return data.d;
+        }
+      }
+    });
+  }
+
+  update_presence(config: PresenceUpdate) {
+    const json: GatewayEvent = {
+      op: 3,
+      d: {
+        since: config.since ?? null,
+        afk: config.afk ?? false,
+        status: config.status,
+        activities: config.activities ?? [],
+      },
+      s: null,
+      t: null,
+  }
+
+    this.ws.send(JSON.stringify(json));
   }
 }

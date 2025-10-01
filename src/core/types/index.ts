@@ -12,6 +12,7 @@ import type {
   GatewayResume,
   Heartbeat,
   PresenceUpdate,
+  RequestGuildMembers,
 } from './gateway';
 import type { ClientConfig } from './internals/index.js';
 import type { GatewayUrl } from './rest';
@@ -30,6 +31,7 @@ export type {
   GatewayResume,
   Heartbeat,
   PresenceUpdate,
+  RequestGuildMembers,
   ClientConfig,
   GatewayUrl,
 };

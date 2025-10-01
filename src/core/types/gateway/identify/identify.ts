@@ -6,6 +6,6 @@ export interface Identify {
   compress?: boolean;
   large_threshold?: number;
   shard?: number[];
-  presence?: PresenceUpdate;
+  presence?: PresenceUpdate | null;
   intents: number;
 }

@@ -1,7 +1,8 @@
 /** Requests */
 import Websocket from 'ws';
 /** Types */
-import type { GatewayEvent, ClientConfig } from '../types/index.js';
+import type { GatewayEvent, ClientConfig, PresenceUpdate, RequestGuildMembers } from '../types/index.js';
+/** Utils */
 import { Logger } from '../../utils/index.js';
 /** Event */
 import EventEmitter from 'events';
@@ -17,6 +18,8 @@ export declare class Gateway extends EventEmitter {
     token: string;
     /** The intents the client is going to have */
     intents: number;
+    large_threshold: number;
+    presence: PresenceUpdate | null;
     /** Should we send the identify payload? */
     send_id: boolean;
     /** Have we sent the first heartbeat? */
@@ -46,5 +49,7 @@ export declare class Gateway extends EventEmitter {
     identify(): void;
     /** Reconnect to the Discord API gateway */
     reconnect(): void;
+    request_guild_member(config: RequestGuildMembers): void;
+    update_presence(config: PresenceUpdate): void;
 }
 //# sourceMappingURL=gateway.d.ts.map

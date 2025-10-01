@@ -9,10 +9,10 @@ import type {
 
 export interface Activity {
   name: string;
-  type: 0 | 1;
+  type: 0 | 1 | 2 | 3 | 4 | 5;
   url?: string | null;
-  created_at: number;
-  timestamps: ActivityTimestamps;
+  created_at?: number;
+  timestamps?: ActivityTimestamps;
   application_id?: number;
   status_display_type?: 0 | 1 | 2 | null;
   details?: string | null;

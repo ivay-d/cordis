@@ -1,7 +1,6 @@
 /** Requests */
 import Websocket from 'ws';
 /** Utils */
-import { Endpoints } from '../types/index.js';
 import { Logger } from '../../utils/index.js';
 import { platform } from 'os';
 /** Event */
@@ -18,6 +17,8 @@ export class Gateway extends EventEmitter {
     token;
     /** The intents the client is going to have */
     intents;
+    large_threshold;
+    presence;
     /** Should we send the identify payload? */
     send_id;
     /** Have we sent the first heartbeat? */
@@ -38,6 +39,9 @@ export class Gateway extends EventEmitter {
         this.ws = new Websocket('wss://gateway.discord.gg/?v=10&encoding=json');
         this.token = config.token;
         this.intents = config.intents ?? 0;
+        this.large_threshold = config.large_threshold ?? 50;
+        this.presence = config.presence ?? null;
+        this.presence.afk = this.presence?.afk ?? false;
         this.send_id = false;
         this.sent_heartbeat = false;
         this.interval_id = null;
@@ -45,6 +49,7 @@ export class Gateway extends EventEmitter {
         this.resume_gateway_url = null;
         this.session_id = null;
         this.logger = new Logger();
+        this.event_handler();
     }
     /**
      * Handles gateway events
@@ -106,10 +111,13 @@ export class Gateway extends EventEmitter {
                             this.d_field = data.s;
                             /** Emit the ready event */
                             this.emit('ready', data.d);
-                            this.reconnect();
                             break;
+                        /** We succesfully reconnected */
                         case 2:
                             this.logger.info('Reconnected!');
+                            break;
+                        /** Ignore */
+                        case 10:
                             break;
                         default:
                             /** Unimplemented events */
@@ -131,6 +139,7 @@ export class Gateway extends EventEmitter {
          */
         this.ws.on('close', (code, reason) => {
             switch (code) {
+                /** Try to reconnect */
                 case 4000:
                 case 4001:
                 case 4002:
@@ -142,6 +151,7 @@ export class Gateway extends EventEmitter {
                     this.logger.info(`Attempting to reconnect. Code: ${code}, ${reason}`);
                     this.reconnect();
                     break;
+                /** Can't reconnect */
                 case 4004:
                 case 4010:
                 case 4011:
@@ -151,6 +161,7 @@ export class Gateway extends EventEmitter {
                     this.logger.info(`Cannot reconnect :( Code: ${code}, ${reason}`);
                     process.exit();
                     break;
+                /** Try to reconnect */
                 default:
                     this.logger.info(`Attempting to reconnect. Code: ${code}, ${reason}`);
                     this.reconnect();
@@ -204,6 +215,9 @@ export class Gateway extends EventEmitter {
                     browser: "cordis"
                 },
                 intents: this.intents,
+                large_threshold: this.large_threshold,
+                presence: this.presence,
+                shard: [0, 2]
             },
             s: null,
             t: null,
@@ -239,6 +253,43 @@ export class Gateway extends EventEmitter {
             });
         };
         this.ws.close();
+    }
+    request_guild_member(config) {
+        const json = {
+            op: 8,
+            d: {
+                guild_id: config.guild_id ?? null,
+                query: config.query ?? null,
+                limit: config.limit ?? null,
+                presences: config.presences ?? null,
+                user_ids: config.user_ids ?? null,
+                nonce: config.nonce ?? null,
+            },
+            s: null,
+            t: null,
+        };
+        this.ws.send(JSON.stringify(json));
+        this.ws.on('message', (data) => {
+            if (data.op === 0) {
+                if (data.s === 10) {
+                    return data.d;
+                }
+            }
+        });
+    }
+    update_presence(config) {
+        const json = {
+            op: 3,
+            d: {
+                since: config.since ?? null,
+                afk: config.afk ?? false,
+                status: config.status,
+                activities: config.activities ?? [],
+            },
+            s: null,
+            t: null,
+        };
+        this.ws.send(JSON.stringify(json));
     }
 }
 //# sourceMappingURL=gateway.js.map
